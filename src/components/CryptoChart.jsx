@@ -22,7 +22,7 @@ export function CryptoChart({ realtimePrice }) {
         horzLines: { color: '#ffffff10' },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 300, // Adjusted height to match TopMovers card
+      height: 300,
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
@@ -86,7 +86,7 @@ export function CryptoChart({ realtimePrice }) {
   }, [realtimePrice, lastCandle])
 
   return (
-    <div className="relative h-[300px]"> {/* Fixed height container */}
+    <div className="relative h-[300px]">
       {error ? (
         <div className="h-full flex items-center justify-center text-danger">
           {error}

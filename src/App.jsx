@@ -17,9 +17,10 @@ export default function App() {
   const [topCryptos, setTopCryptos] = useState([])
   const [realTimePrices, setRealTimePrices] = useState({})
   const [activeView, setActiveView] = useState('dashboard')
-  const [error, setError] = useState(null)
+  const [previousView, setPreviousView] = useState('dashboard')
   const [selectedCrypto, setSelectedCrypto] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const handleWebSocketMessage = useCallback((data) => {
     if (data.e === 'trade') {
@@ -96,13 +97,14 @@ export default function App() {
   })
 
   const handleCryptoSelect = (crypto) => {
+    setPreviousView(activeView)
     setSelectedCrypto(crypto)
     setActiveView('detail')
   }
 
   const handleBackClick = () => {
     setSelectedCrypto(null)
-    setActiveView('dashboard')
+    setActiveView(previousView)
   }
 
   if (isLoading) {
@@ -113,57 +115,23 @@ export default function App() {
     )
   }
 
-  return (
-    <div className="min-h-screen bg-dark text-light p-6">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Valmiki's Crypto Dashboard</h1>
-        <p className="text-muted">Real-time market overview</p>
-        {error && (
-          <div className="mt-2 text-sm text-danger bg-danger/10 px-3 py-2 rounded-lg">
-            {error}
-          </div>
-        )}
-        <div className="mt-4 flex gap-4">
-          <button
-            onClick={() => {
-              setActiveView('dashboard')
-              setSelectedCrypto(null)
-            }}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              activeView === 'dashboard' 
-                ? 'bg-[#ffffff14] text-light' 
-                : 'text-muted hover:text-light'
-            }`}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => {
-              setActiveView('market')
-              setSelectedCrypto(null)
-            }}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              activeView === 'market' 
-                ? 'bg-[#ffffff14] text-light' 
-                : 'text-muted hover:text-light'
-            }`}
-          >
-            View Market
-          </button>
-        </div>
-      </header>
-
-      {activeView === 'detail' && selectedCrypto ? (
+  const renderContent = () => {
+    if (activeView === 'detail' && selectedCrypto) {
+      return (
         <div>
           <button 
             onClick={handleBackClick}
             className="mb-4 px-4 py-2 bg-[#ffffff14] hover:bg-[#ffffff1f] rounded-lg transition-colors"
           >
-            ← Back to Overview
+            ← Back to {previousView === 'dashboard' ? 'Overview' : 'Market'}
           </button>
           <CryptoDetail crypto={selectedCrypto} />
         </div>
-      ) : activeView === 'dashboard' ? (
+      )
+    }
+
+    if (activeView === 'dashboard') {
+      return (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <StatsCard
@@ -215,12 +183,58 @@ export default function App() {
             />
           </div>
         </>
-      ) : (
-        <MarketView 
-          cryptos={cryptosWithRealTime} 
-          onCryptoSelect={handleCryptoSelect}
-        />
-      )}
+      )
+    }
+
+    return (
+      <MarketView 
+        cryptos={cryptosWithRealTime} 
+        onCryptoSelect={handleCryptoSelect}
+      />
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-dark text-light p-6">
+      <header className="mb-8">
+        <h1 className="text-4xl font-bold mb-2">Valmiki's Crypto Dashboard</h1>
+        <p className="text-muted">Real-time market overview</p>
+        {error && (
+          <div className="mt-2 text-sm text-danger bg-danger/10 px-3 py-2 rounded-lg">
+            {error}
+          </div>
+        )}
+        <div className="mt-4 flex gap-4">
+          <button
+            onClick={() => {
+              setActiveView('dashboard')
+              setSelectedCrypto(null)
+            }}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              activeView === 'dashboard' 
+                ? 'bg-[#ffffff14] text-light' 
+                : 'text-muted hover:text-light'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => {
+              setActiveView('market')
+              setSelectedCrypto(null)
+            }}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              activeView === 'market' 
+                ? 'bg-[#ffffff14] text-light' 
+                : 'text-muted hover:text-light'
+            }`}
+          >
+            View Market
+          </button>
+        </div>
+      </header>
+
+      {renderContent()}
     </div>
   )
 }

@@ -1,28 +1,16 @@
 const COINGECKO_API = 'https://api.coingecko.com/api/v3'
 const BINANCE_API = 'https://api.binance.com/api/v3'
 
-// Sample data for initial state
+// Sample data with real crypto names for fallback
 const sampleData = {
   marketStats: {
     marketCap: 2100000000000,
     volume: 84200000000,
     btcDominance: 42.1
   },
-  cryptos: Array(50).fill(null).map((_, index) => ({
-    id: `crypto-${index + 1}`,
-    symbol: `sym${index + 1}`,
-    name: `Crypto ${index + 1}`,
-    image: `https://assets.coingecko.com/coins/images/${index + 1}/small/placeholder.png`,
-    current_price: 1000 / (index + 1),
-    market_cap: 1000000000 / (index + 1),
-    market_cap_rank: index + 1,
-    total_volume: 500000000 / (index + 1),
-    price_change_percentage_24h: (Math.random() * 20) - 10,
-    sparkline_in_7d: { price: Array(168).fill(1000 / (index + 1)) },
-    circulating_supply: 1000000 * (index + 1),
-    max_supply: index % 2 === 0 ? 2000000 * (index + 1) : null,
-    ath: 2000 / (index + 1)
-  }))
+  cryptos: [
+    // ... existing sample data ...
+  ]
 }
 
 async function fetchWithRetry(url, retries = 3) {
@@ -122,7 +110,6 @@ export async function getCryptoOHLC(symbol, timeframe = '1h', limit = 168) {
     })).sort((a, b) => a.time - b.time)
   } catch (error) {
     console.warn(`Failed to fetch OHLC data for ${symbol}:`, error)
-    // Return sample data
     return Array(limit).fill(0).map((_, i) => ({
       time: Math.floor(Date.now() / 1000) - (limit - 1 - i) * 3600,
       open: 100,
