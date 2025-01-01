@@ -1,1 +1,3 @@
-# bolt_valmikis_crypto_dashboard
+# Bolt.DIY Generated Crypto Dashboard
+# Valmiki's Crypto Dashboard
+
